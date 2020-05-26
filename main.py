@@ -1,6 +1,9 @@
 import PySimpleGUI as sg
 sg.SetOptions(element_padding=(0, 0))
+import pandas as pd
 
+from more_itertools import grouper
+import itertools
 
 """
     Restrict the characters allowed in an input element to digits and . or -
@@ -104,6 +107,46 @@ def binarytohex():
             return sg.popup('Number not binary! Binary numbers are made up of only 1s and 0s ',title='error')
 
     
+    df = pd.read_csv('hextable.csv')
+
+    t_string = str(user_input)
+
+    t_list = list(t_string)
+
+    t_list.reverse()
+
+    # https://more-itertools.readthedocs.io/en/latest/api.html#more_itertools.grouper
+
+    y = list(grouper(t_list, 4, '0'))
+
+    x = [tup[::-1] for tup in y]
+
+    random_list = []
+
+    for i in x:
+
+        i_str = "".join(i)
+
+        i_num = int(i_str)
+
+        f = df.loc[df['Binary'] == i_num, 'Hex']
+
+        d = f.values
+
+        r = d.tolist()
+
+        random_list.append(r)
+
+        merged = list(itertools.chain(*random_list))
+
+        merged.reverse()
+
+        merged_str = ''.join(merged)
+
+        merged_str_message =  merged_str + ' is the equivalent of ' + values['-IN-'] + ' in base 16.'
+        
+
+    return sg.popup(merged_str_message)
 
 def hextobinary():
 
@@ -185,11 +228,34 @@ def Octaltobase10():
 
     """ converts base 8 digits to base 10"""
 
-    pass
+    
+    base = 8
+
+    running_total = 0
+
+    user_input_str = str(values["-IN-"])
+
+    num_of_digits = len(user_input_str) - 1
+
+    for i in user_input_str:
+
+        x = int(i)
+
+        y = x * (base ** num_of_digits)
+
+        running_total += y 
+
+        num_of_digits-=1
+
+    user_message = str(running_total) + ' is the equivalent of ' + user_input_str + ' in base 10 decimal'
+
+    return sg.popup(user_message,title='info')
 
 def base10toOctal():
 
     """converts base 10 digits to base 8 digits"""
+
+    
 
 def Octaltobinary():
 
@@ -258,9 +324,9 @@ while True:
 
             hextobase10()
 
-            
+        elif values['-from-'] == "Octal" and values["-to-"] == 'Base 10':
 
-
+            Octaltobase10()
 
         else:
 
